@@ -89,3 +89,7 @@ activemq-data/
 # Javascript
 node_modules/
 npm-debug.log*
+
+# App
+data/
+tmp/

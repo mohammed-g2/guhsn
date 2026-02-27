@@ -3,7 +3,7 @@ from flask import Flask
 from config import basedir
 
 
-def create_cli_commands(app: Flask):
+def create_cli_commands(app: Flask) -> None:
   @app.cli.command()
   def init():
     """Initialize the application."""
@@ -20,7 +20,7 @@ def create_cli_commands(app: Flask):
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 
-def create_shell_context(app: Flask):
+def create_shell_context(app: Flask) -> None:
   from app.ext import db
   from app.models import Role, User
 

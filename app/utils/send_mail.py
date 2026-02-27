@@ -3,12 +3,12 @@ from flask import current_app, render_template
 from flask_mail import Message
 from app.ext import mail
 
-def _send_async_mail(app, msg: str):
+def _send_async_mail(app, msg: str) -> None:
   with app.app_context():
     mail.send(msg)
 
 
-def send_mail(to: str, subject: str, template: str, **kwargs):
+def send_mail(to: str, subject: str, template: str, **kwargs) -> None:
   """
   :param to: the recipient, user's email account
   :param subject: email subject

@@ -1,7 +1,8 @@
 from flask import render_template, redirect, url_for, flash, request, current_app
 from flask_login import current_user, login_user, logout_user, login_required
 from app.errors import (
-  LoginError, EmailAlreadyExistsError, UsernameAlreadyExistsError, TokenError)
+  LoginError, EmailAlreadyExistsError, UsernameAlreadyExistsError, 
+  TokenError, UserNotFoundError, PasswordValidationError)
 from . import auth_bp
 from .forms import LoginForm, RegisterForm
 
@@ -22,8 +23,15 @@ def login():
       if next is None or not next.startswith('/'):
         next = url_for('main.index')
       return redirect(next)
+    except UserNotFoundError:
+      #flash('incorrect email', category='warning')
+      pass
+    except PasswordValidationError:
+      #flash('incorrect password', category='warning')
+      pass
     except LoginError:
       flash('Username or password are not correct.', category='danger')
+    
 
   return render_template('auth/login.html', form=form)
 

@@ -1,3 +1,4 @@
+from typing import Union
 from flask import Flask
 from app.models import User
 from app.ext import db
@@ -12,15 +13,15 @@ class UserService:
   def __init__(self, app: Flask):
     self.app = app
   
-  def get(self, id: int) -> User | None:
+  def get(self, id: int) -> Union[User, None]:
     """Get user by id."""
     return User.query.get(int(id))
   
-  def get_by_email(self, email: str) -> User | None:
+  def get_by_email(self, email: str) -> Union[User, None]:
     """Get user by email account."""
     return User.query.filter_by(email=email).first()
   
-  def get_by_username(self, username: str) -> User | None:
+  def get_by_username(self, username: str) -> Union[User, None]:
     """Get user py username."""
     return User.query.filter_by(username=username).first()
   
@@ -62,7 +63,7 @@ class UserService:
     user = self.get_by_email(email)
     if user is None:
       raise UserNotFoundError()
-    if user.verify_password(password):
+    if not user.verify_password(password):
       raise PasswordValidationError()
     
     return user
@@ -93,7 +94,7 @@ class UserService:
       db.session.commit()
       return True
 
-  def send_confirmation_mail(self, user: User) -> None:
+  def send_confirmation_mail(self, user: User, token: str) -> None:
     """
     Send confirmation email to the user
     """
