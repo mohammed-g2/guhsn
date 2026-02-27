@@ -17,7 +17,7 @@ class PasswordValidationError(LoginError): pass
 
 class RegistrationError(AuthError):
   """Base class for user registration errors."""
-  def __init__(self, message='Registration failed', status_code=409):
+  def __init__(self, message='Registration Failed', status_code=409):
     super().__init__(message, status_code)
 
 
@@ -28,14 +28,23 @@ class UsernameAlreadyExistsError(RegistrationError): pass
 
 class TokenError(AuthError):
   """Base class for all token related errors."""
-  def __init__(self, message='Invalid token', status_code=401):
+  def __init__(self, message='Invalid Token', status_code=401):
     super().__init__(message, status_code)
 
 
-class TokenExpiredError(TokenError): pass
+class TokenExpiredError(TokenError):
+  def __init__(self, message='Token Expired'):
+    super().__init__(message)
 
-class TokenInvalidSignatureError(TokenError): pass
+class TokenInvalidSignatureError(TokenError):
+  def __init__(self, message='Invalid Signature Error'):
+    super().__init__(message)
 
-class TokenMalformedError(TokenError): pass
+class TokenMalformedError(TokenError):
+  def __init__(self, message='Malformed Token'):
+    super().__init__(message)
 
-class TokenInvalidError(TokenError): pass
+class TokenPayloadError(TokenError):
+  def __init__(self, message='Payload does not match the context'):
+    super().__init__(self, message)
+
