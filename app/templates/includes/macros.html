@@ -1,0 +1,11 @@
+
+{% macro form_input(field, id, aria_description='') %}
+  {% if field.errors %}
+    {{ field(class="form-control is-invalid", id=id, aria_description=aria_description, **kwargs) }}
+    {% for error in field.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+  {% else %}
+    {{ field(class="form-control", id=id, aria_description=aria_description) }}
+  {% endif %}
+{% endmacro %}

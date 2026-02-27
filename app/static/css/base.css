@@ -1,0 +1,213 @@
+* {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 
+               'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --primary-color: #00A896; /* teal - CTAs, Links, and Highlights.*/
+  --primary-hover: #33B9AB;
+  --primary--active: #008F80;
+  --secondary-color: #1D2D35; /* deep slate - Navigation bars and Headlines. */
+  --secondary-hover: #2c4653;
+  --secondary-active: #0a354b;
+  --secondary-background: #F0F9F8; /* soft mint - Background sections and Card UI.*/
+  --primary-background: #F8F9FA; /* off white - Main body background.*/
+  --disabled: #6b6b6b;
+}
+
+* {
+  /* border-radius: 0 !important; */
+}
+
+body {
+  background-color: var(--primary-background);
+  min-height: 100vh;
+  display: grid;
+  /* Header: auto height, Main: 1fr - fills space, Footer: auto height */
+  grid-template-rows: auto 1fr auto;
+}
+
+a {
+  color: var(--primary-color) !important;
+}
+a:hover {
+  color: var(--primary-hover) !important;
+  cursor: pointer;
+}
+a:active {
+  color: var(--primary--active) !important;
+}
+
+.material-icons {
+  font-family: 'Material Icons' !important;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  margin-top: -3px;
+}
+
+.alert-box {
+  position: fixed;
+  top: 8px;
+  z-index: 1100;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.alert-box > .alert {
+  width: 50%;
+}
+
+/* START Custom text */
+.text-teal {
+  color: var(--primary-color) !important;
+}
+
+.text-slate {
+  color: var(--secondary-color) !important;
+}
+
+.disabled {
+  color: var(--disabled) !important;
+}
+/* END Custom text */
+
+/* START Custom Backgrounds */
+.bg-teal {
+  background-color: var(--primary-color) !important;
+  color: #ffffff !important;
+}
+
+.bg-slate {
+  background-color: var(--secondary-color) !important;
+  color: #ffffff !important;
+}
+/* END Custom Backgrounds */
+
+/* START Custom Buttons */
+.btn-teal {
+  background-color: var(--primary-color) !important;
+  color: #ffffff !important;
+}
+.btn-teal:hover {
+  background-color: var(--primary-hover) !important;
+  color: #ffffff !important;
+}
+.btn-teal:active {
+  background-color: var(--primary--active) !important;
+  color: #ffffff !important;
+}
+
+.btn-slate {
+  background-color: var(--secondary-color) !important;
+  color: #ffffff !important;
+}
+.btn-slate:hover {
+  background-color: var(--secondary-hover) !important;
+  color: #ffffff !important;
+}
+.btn-slate:active {
+  background-color: var(--secondary-active) !important;
+  color: #ffffff !important;
+}
+/* END Custom Buttons */
+
+/* START Custom Unordered List */
+.custom-list {
+  list-style-type: square;
+  list-style-position: inside;
+}
+ul.custom-list {
+  list-style-type: none;
+}
+ul.custom-list li {
+  position: relative;
+  padding-left: 30px;   /* Space for bullet */
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+ul.custom-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;             /* Aligns it vertically with the first line of text */
+  width: 12px;
+  height: 12px;
+  background-color: var(--secondary-color);
+  border-radius: 50%;
+  border: 2px solid var(--secondary-hover);  /* Add a subtle glow or border */
+}
+/* END Custom Unordered List */
+
+/* START Custom checkbox */
+.form-check-input.cb-lg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.15rem; /* Alignment tweak */
+    cursor: pointer;
+}
+/* 2. Color Overrides*/
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.form-check-input:focus {
+    border-color: var(--primary-hover);
+    box-shadow: 0 0 0 0.25rem var(--primary-active);
+}
+.form-check-input:active {
+    filter: brightness(90%);
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+/* END Custom checkbox */
+
+/* Small devices (phones, 380px and up) */
+@media (min-width: 380px) {
+  .alert-box > .alert {
+    width: 100%;
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .alert-box > .alert {
+    width: 100%;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .alert-box > .alert {
+    width: 75%;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .alert-box > .alert {
+    width: 50%;
+  }
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .alert-box > .alert {
+    width: 50%;
+  }
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .alert-box > .alert {
+    width: 50%;
+  }
+}
+

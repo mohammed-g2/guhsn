@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div id="main">
+  <h1>Hello World!</h1>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  console.log('Working again!!');
+</script>
+{% endblock %}

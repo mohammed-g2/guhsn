@@ -1,0 +1,65 @@
+
+/* banner for LOGIN and REGISTER pages */
+.gradient-banner {
+  background-color: #F8F9FA;
+  background-image: 
+    radial-gradient(
+      circle at top left,
+      rgba(0, 168, 150, 0.25) 0%,
+      rgba(0, 168, 150, 0.15) 30%,
+      rgba(0, 168, 150, 0.08) 55%,
+      transparent 70%
+    ),
+    linear-gradient(rgba(248, 249, 250, 0.5),
+    rgba(248, 249, 250, 0.75)), /* Opacity Filter */
+    url('../assets/branch-3.svg');
+
+  /* Control the Size */
+  background-size: auto, auto, 75%; /* Gradient 1, Filter 2, SVG 3 */
+  
+  /* Control Position and Repeat */
+  background-repeat: no-repeat;
+  background-position: top left, center, center 34vh;
+}
+
+/* Small devices (phones, 380px and up) */
+@media (min-width: 380px) {
+  .gradient-banner {
+    height: 10% !important;
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .gradient-banner {
+    height: 20% !important;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .gradient-banner {
+    height: 20% !important;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .gradient-banner {
+    height: 100vh !important;
+  }
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .gradient-banner {
+    height: 100vh !important;
+  }
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .gradient-banner {
+    height: 100vh !important;
+  }
+}

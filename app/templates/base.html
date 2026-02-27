@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    <!-- Third-party CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/bootstrap/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/@fontsource/material-icons/index.css') }}">
+    <!-- Third-part font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block head %}
+    <title>Ghusn - {% block title %}{% endblock %}</title>
+    {% endblock %}
+  </head>
+  <body>
+    <header>
+      <!-- includes -->
+      <div style="display:none;">
+        {% include 'branch-3.svg' %}
+      </div>
+
+      <!-- START Flashed Messages -->
+      <div class="alert-box m-0 p-0">
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+          {# if no category is provided. default to 'warning' #}
+          {% if category == 'message' %}
+            {% set category = 'warning' %}
+          {% endif %}
+          <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+            <span>{{ message }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+      <!-- END Flashed Messages -->
+
+      <!-- START Navbar -->
+      {% include 'includes/navbar.html' %}
+      <!-- END Navbar -->
+    </header>
+  
+    <!-- START Main Content -->
+    <main>
+      {% block content %}
+      {% endblock %}
+    </main>
+    <!-- END Main Content -->
+
+    <!-- START FOOTER -->
+    <footer class="bg-slate text-white text-center p-3">
+      <div class="container">
+        All Rights Reserved &copy; 2026.
+      </div>
+    </footer>
+    <!-- END FOOTER -->
+
+    <!-- Third-party JS -->
+    <script src="{{ url_for('static', filename='node_modules/@popperjs/core/dist/umd/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/dayjs/dayjs.min.js') }}"></script>
+    <!-- App JS -->
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    {% block js %}
+    {% endblock %}
+  </body>
+</html>
