@@ -23,14 +23,12 @@ def login():
       if next is None or not next.startswith('/'):
         next = url_for('main.index')
       return redirect(next)
-    except UserNotFoundError:
-      #flash('incorrect email', category='warning')
-      pass
-    except PasswordValidationError:
-      #flash('incorrect password', category='warning')
-      pass
-    except LoginError:
+    except LoginError as e:
       flash('Username or password are not correct.', category='danger')
+      if isinstance(e, UserNotFoundError):
+        pass
+      elif isinstance(e, PasswordValidationError):
+        pass
     
 
   return render_template('auth/login.html', form=form)
