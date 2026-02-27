@@ -4,7 +4,7 @@ from app.models import User
 from app.ext import db
 from app.errors import (
   UserNotFoundError, PasswordValidationError, UsernameAlreadyExistsError,
-  EmailAlreadyExistsError, TokenError, TokenInvalidError)
+  EmailAlreadyExistsError, TokenError, TokenPayloadError)
 from app.utils.security import generate_timed_token, decode_timed_token
 from app.utils.send_mail import send_mail
 
@@ -87,14 +87,14 @@ class UserService:
     """
     decoded = decode_timed_token(token)
     if decoded['confirm'] != user.id:
-      raise TokenInvalidError(message='Token does not match the user')
+      raise TokenPayloadError(message='Token does not match the user')
     if not user.confirmed:
       user.confirmed = True
       db.session.add(user)
       db.session.commit()
       return True
 
-  def send_confirmation_mail(self, user: User, token: str) -> None:
+  def send_confirmation_mail(self, user: User) -> None:
     """
     Send confirmation email to the user
     """

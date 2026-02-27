@@ -76,8 +76,8 @@ def confirm(token):
   try:
     confirmed = svr.confirm_user(current_user, token)
     flash(f'Account confirmed.', category='info')
-  except TokenError:
-    flash(f'Could not confirm your account: {confirmed}', category='danger')
+  except TokenError as e:
+    flash('Could not confirm your account.', category='danger')
   
   return redirect(url_for('main.index'))
 
