@@ -4,7 +4,9 @@ from app.errors import (
   LoginError, EmailAlreadyExistsError, UsernameAlreadyExistsError, 
   TokenError, UserNotFoundError, PasswordValidationError)
 from . import auth_bp
-from .forms import LoginForm, RegisterForm
+from .forms import (
+  LoginForm, RegisterForm, UpdateUserProfileForm, UpdateUserEmailForm,
+  UpdateUserPasswordForm)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -94,23 +96,44 @@ def resend_confirmation():
   return redirect(url_for('main.index'))
 
 
-@auth_bp.route('/settings')
+@auth_bp.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
-  return render_template('auth/settings.html')
+  profile_form = UpdateUserProfileForm()
+  email_form = UpdateUserEmailForm()
+  password_form = UpdateUserPasswordForm()
+  
+  svr = current_app.user_service
+  user = current_user._get_current_object()
+  
+  if request.method == 'POST':
+    if profile_form.submit.data:
+      if profile_form.validate_on_submit():
+        try:
+          svr.update_profile(
+            user=user, username=profile_form.username.data)
+          flash('User profile updated.', category='info')
+          return redirect(url_for('auth.settings'))
+        except UsernameAlreadyExistsError:
+          profile_form.username.errors.append('Username already in use.')
+    
+    elif email_form.submit.data:
+      if email_form.validate_on_submit():
+        pass
+    elif password_form.submit.data:
+      if password_form.validate_on_submit():
+        pass
+      
+  return render_template(
+    'auth/settings.html',
+    profile_form=profile_form,
+    email_form=email_form,
+    password_form=password_form)
 
 
-@auth_bp.route('/update-user-data', methods=['POST'])
-@login_required
-def update_user_data():
+@auth_bp.route('/update-user-email/<token>')
+def update_user_email(token):
   pass
-
-
-@auth_bp.route('/update-user-email', methods=['POST'])
-@login_required
-def update_user_email():
-  pass
-
 
 @auth_bp.route('/reset-password', methods=['GET', 'POST'])
 def reset_password_request():

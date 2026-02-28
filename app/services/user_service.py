@@ -104,3 +104,28 @@ class UserService:
       subject='Confirm Your Email', 
       template='email/confirm', 
       user=user, token=token)
+  
+  def update_profile(self, user, username=None) -> None:
+    """
+    Update user info
+    :raises UsernameAlreadyExistsError: if username name already in use
+    """
+    if username == user.username:
+      return
+    elif User.query.filter_by(username=username).first():
+      raise UsernameAlreadyExistsError()
+    user.username = username
+    db.session.add(user)
+    db.session.commit()
+    
+  
+  def update_email_request(self, user: User, email: str) -> None:
+    """Update user's email address."""
+    email_found = User.query.filter_by(email=email).first()
+    if email_found:
+      raise EmailAlreadyExistsError()
+    send_mail(
+      user, 'Update Email Address', 'email/update-mail', token=token)
+    
+  def update_email(token: str):
+    pass

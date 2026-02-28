@@ -23,7 +23,7 @@ def run_server():
         print("Address: 127.0.0.1 | Port: 1025")
         print("Action:  Press [Ctrl + C] to stop the server.")
         
-        # This is the "Windows Fix": time.sleep allows the OS to 
+        # "Windows Fix": time.sleep allows the OS to 
         # pass the KeyboardInterrupt signal to Python.
         while True:
             time.sleep(1)

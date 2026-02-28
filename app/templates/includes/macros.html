@@ -6,6 +6,6 @@
       <div class="invalid-feedback">{{ error }}</div>
     {% endfor %}
   {% else %}
-    {{ field(class="form-control", id=id, aria_description=aria_description) }}
+    {{ field(class="form-control", id=id, aria_description=aria_description, **kwargs) }}
   {% endif %}
 {% endmacro %}

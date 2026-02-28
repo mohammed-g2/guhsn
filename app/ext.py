@@ -13,6 +13,7 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message  = 'Please login to view this page.'
 login_manager.login_message_category = 'info'
+login_manager.session_protection = 'strong'
 
 def init_auth(user_service):
   @login_manager.user_loader

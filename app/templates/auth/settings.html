@@ -1,15 +1,85 @@
 {% extends 'base.html' %}
+{% from 'includes/macros.html' import form_input %}
 
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-<div class="mt-3 ms-3">
-  <h3>Settings</h3>
-  <div class="p-3 w-75" style="background-color:var(--secondary-background)">
-    Your account is not confirmed yet, 
-    <a href="{{ url_for('auth.resend_confirmation') }}">
-      click here to resend confirmation email.
-    </a>
+<div class="container-fluid">
+<div class="row mb-3">
+  
+  <div class="col-md-3 col-12 mt-3">
+    <h5 class="mb-3">Settings</h5>
+    <div class="border-bottom pb-1 pt-3">
+      <a href="#update-profile" class="text-decoration-none">User Profile</a>
+    </div>
+    <div class="border-bottom pb-1 pt-3">
+      <a href="#update-email" class="text-decoration-none">Email Address</a>
+    </div>
+    <div class="border-bottom pb-1 pt-3">
+      <a href="#update-password" class="text-decoration-none">Password</a>
+    </div>
+  </div>
+  
+  <div class="col-lg-6 col-md-8 col-12 mt-3">
+    {% if not current_user.confirmed %}
+    <div class="p-3 w-75 bg-mint">
+      Your account is not confirmed yet, 
+      <a href="{{ url_for('auth.resend_confirmation') }}">
+        click here to resend confirmation email.
+      </a>
+    </div>
+    {% endif %}
+    
+    <div class="mt-5 bg-mint" id="update-profile">
+      <h5 class="bg-slate p-2">Update Profile</h5>
+      <form class="mt-2 p-3" method="post">
+        {{ profile_form.hidden_tag() }}
+        
+        <div class="mb-3">
+          {{ profile_form.username.label(for='username-input', class='form-label') }} 
+          {{ form_input(profile_form.username, id='username-input', value=current_user.username) }}
+        </div>
+        
+        <div class="">{{ profile_form.submit(class='btn btn-teal') }}</div>
+      </form>
+    </div>
+    
+    <div class="mt-5 bg-mint" id="update-email">
+      <h5 class="bg-slate p-2">Update Email Address</h5>
+      <form class="mt-2 p-3" method="post">
+        {{ email_form.hidden_tag() }}
+        
+        <div class="mb-3">
+          {{ email_form.email.label(for='email-input', class='form-label') }} 
+          {{ form_input(email_form.email, id='email-input', aria_description='email-help', value=current_user.email) }}
+          <div id="email-help" class="form-text">An email will be sent to you to confirm email change.</div>
+        </div>
+        
+        <div class="">{{ email_form.submit(class='btn btn-teal') }}</div>
+      </form>
+    </div>
+    
+    <div class="mt-5 bg-mint" id="update-password">
+      <h5 class="bg-slate p-2">Update Password</h5>
+      <form class="mt-2 p-3" method="post">
+        {{ password_form.hidden_tag() }}
+        
+        <div class="mb-3">
+          {{ password_form.password.label(for='password-input', class='form-label') }} 
+          {{ form_input(password_form.password, id='password-input', aria_description='password-help') }}
+          <div id="username-help" class="form-text">An email will be sent to you to confirm password change.</div>
+        </div>
+        <div class="mb-3">
+          {{ password_form.password2.label(for='confirm-password-input', class='form-label') }} 
+          {{ form_input(password_form.password2, id='confirm-password-input', class='form-control') }}
+        </div>
+        
+        <div class="">{{ password_form.submit(class='btn btn-teal') }}</div>
+      </form>
+    </div>
+    
   </div>
 </div>
+</div>
+
 {% endblock %}

@@ -88,6 +88,10 @@ a:active {
   background-color: var(--secondary-color) !important;
   color: #ffffff !important;
 }
+
+.bg-mint {
+  background-color: var(--secondary-background) !important;
+}
 /* END Custom Backgrounds */
 
 /* START Custom Buttons */
