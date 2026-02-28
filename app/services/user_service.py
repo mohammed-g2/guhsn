@@ -130,7 +130,7 @@ class UserService:
       template='email/update-email', 
       token=token)
     
-  def update_email(self, user: User, token: str):
+  def update_email(self, user: User, token: str) -> None:
     """
     Update user's email address
     
@@ -140,6 +140,29 @@ class UserService:
     if not user.email == decoded['email']:
       raise TokenPayloadError()
     user.email = decoded['new-email']
+    db.session.add(user)
+    db.session.commit()
+  
+  def password_change_request(self, user: User, password: str) -> None:
+    """
+    Request password change
+    
+    :raises PasswordValidationError: if provided password doesn't match
+    """
+    if not user.verify_password(password):
+      raise PasswordValidationError()
+    token = generate_timed_token({'change-password': user.id})
+    send_mail(
+      to=user.email,
+      subject='Change Password',
+      template='email/change-password',
+      token=token)
+  
+  def change_password(self, user: User, token: str, password: str) -> None:
+    decoded = decode_timed_token(token)
+    if not decoded.get('change-password') == user.id:
+      raise TokenPayloadError()
+    user.password = password
     db.session.add(user)
     db.session.commit()
 

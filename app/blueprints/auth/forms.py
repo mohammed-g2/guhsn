@@ -26,6 +26,14 @@ class RegisterForm(FlaskForm):
   submit = SubmitField('Sign Up')
 
 
+class ChangePasswordForm(FlaskForm):
+  password = PasswordField('New Password', validators=[
+    DataRequired(), Length(min=6), 
+    EqualTo('password2', message='Password must match.')])
+  password2 = PasswordField('Confirm password', validators=[DataRequired()])
+  submit = SubmitField('Change Password')
+
+
 # settings page forms
 
 class UpdateUserProfileForm(FlaskForm):
@@ -42,9 +50,6 @@ class UpdateUserEmailForm(FlaskForm):
   submit_email = SubmitField('Update')
 
 
-class UpdateUserPasswordForm(FlaskForm):
-  password = PasswordField('Update Password', validators=[
-    DataRequired(), Length(min=6), 
-    EqualTo('password2', message='Password must match.')])
-  password2 = PasswordField('Confirm password', validators=[DataRequired()])
-  submit_password = SubmitField('Update')
+class VerifyUserPasswordForm(FlaskForm):
+  password = PasswordField('Current Password', validators=[DataRequired(), Length(min=6)])
+  submit_password = SubmitField('Submit')

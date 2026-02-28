@@ -67,11 +67,9 @@
         <div class="mb-3">
           {{ password_form.password.label(for='password-input', class='form-label') }} 
           {{ form_input(password_form.password, id='password-input', aria_description='password-help') }}
-          <div id="username-help" class="form-text">An email will be sent to you to confirm password change.</div>
-        </div>
-        <div class="mb-3">
-          {{ password_form.password2.label(for='confirm-password-input', class='form-label') }} 
-          {{ form_input(password_form.password2, id='confirm-password-input', class='form-control') }}
+          <div id="username-help" class="form-text">
+            Enter your current password. An email will be sent to you to confirm password change.
+          </div>
         </div>
         
         <div class="">{{ password_form.submit_password(class='btn btn-teal') }}</div>

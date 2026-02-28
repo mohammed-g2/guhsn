@@ -6,7 +6,7 @@ from app.errors import (
 from . import auth_bp
 from .forms import (
   LoginForm, RegisterForm, UpdateUserProfileForm, UpdateUserEmailForm,
-  UpdateUserPasswordForm)
+  VerifyUserPasswordForm, ChangePasswordForm)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -97,10 +97,9 @@ def resend_confirmation():
 
 
 def profile_form_handler(form):
-  srv = current_app.user_service
-  user = current_user._get_current_object()
-  
   if form.validate_on_submit():
+    srv = current_app.user_service
+    user = current_user._get_current_object()
     try:
       srv.update_profile(user=user, username=form.username.data)
       flash('User profile updated.', category='info')
@@ -110,10 +109,9 @@ def profile_form_handler(form):
 
 
 def email_form_handler(form):
-  srv = current_app.user_service
-  user = current_user._get_current_object()
-  
   if form.validate_on_submit():
+    srv = current_app.user_service
+    user = current_user._get_current_object()
     try:
       srv.update_email_request(user=user, email=form.email.data)
       flash('An email have been sent, please check you inbox.', category='info')
@@ -124,7 +122,14 @@ def email_form_handler(form):
 
 def password_form_handler(form):
   if form.validate_on_submit():
-    pass
+    srv = current_app.user_service
+    user = current_user._get_current_object()
+    try:
+      srv.password_change_request(user=user, password=form.password.data)
+      flash('An email have been sent, please check you inbox.', category='info')
+      return redirect(url_for('auth.settings'))
+    except PasswordValidationError:
+      form.password.errors.append('Incorrect Password.')
 
 
 @auth_bp.route('/settings', methods=['GET', 'POST'])
@@ -132,7 +137,7 @@ def password_form_handler(form):
 def settings():
   profile_form = UpdateUserProfileForm()
   email_form = UpdateUserEmailForm()
-  password_form = UpdateUserPasswordForm()
+  password_form = VerifyUserPasswordForm()
   
   if request.method == 'POST':
     if profile_form.submit_profile.data:
@@ -162,6 +167,25 @@ def update_user_email(token):
     flash(e, category='danger')
   
   return redirect(url_for('auth.settings'))
+
+
+@auth_bp.route('/change-user-password/<token>', methods=['GET', 'POST'])
+@login_required
+def change_password(token):
+  user = current_user._get_current_object()
+  srv = current_app.user_service
+  form = ChangePasswordForm()
+  
+  if form.validate_on_submit():
+    try:
+      srv.change_password(
+        user=user, token=token, password=form.password.data)
+      flash('Password changed.')
+    except TokenError as e:
+      flash(e, category='danger')
+    return redirect(url_for('auth.settings'))
+  
+  return render_template('auth/change-password.html', form=form)
 
 
 @auth_bp.route('/reset-password/<token>')
