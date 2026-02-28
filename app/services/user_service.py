@@ -67,15 +67,6 @@ class UserService:
       raise PasswordValidationError()
     
     return user
-  
-  def generate_confirmation_token(self, user: User) -> str:
-    """
-    generate a token
-    
-    :param user: instance of `User`
-    :returns: confirmation token with payload `{'confirm': user.id}`
-    """
-    return generate_timed_token({'confirm': user.id})
 
   def confirm_user(self, user: User, token: str) -> bool:
     """
@@ -98,7 +89,7 @@ class UserService:
     """
     Send confirmation email to the user
     """
-    token = self.generate_confirmation_token(user)
+    token = generate_timed_token({'confirm': user.id})
     send_mail(
       to=user.email, 
       subject='Confirm Your Email', 
@@ -108,6 +99,7 @@ class UserService:
   def update_profile(self, user, username=None) -> None:
     """
     Update user info
+    
     :raises UsernameAlreadyExistsError: if username name already in use
     """
     if username == user.username:
@@ -120,12 +112,34 @@ class UserService:
     
   
   def update_email_request(self, user: User, email: str) -> None:
-    """Update user's email address."""
+    """
+    Send email to update user's email address.
+    
+    :raises EmailAlreadyExistsError: if email already exists in database
+    """
     email_found = User.query.filter_by(email=email).first()
     if email_found:
       raise EmailAlreadyExistsError()
+    token = generate_timed_token({
+      'email': user.email,
+      'new-email': email
+    })
     send_mail(
-      user, 'Update Email Address', 'email/update-mail', token=token)
+      to=user.email, 
+      subject='Update Email Address', 
+      template='email/update-email', 
+      token=token)
     
-  def update_email(token: str):
-    pass
+  def update_email(self, user: User, token: str):
+    """
+    Update user's email address
+    
+    :raises TokenPayloadError: if user's email address is mismatched
+    """
+    decoded = decode_timed_token(token)
+    if not user.email == decoded['email']:
+      raise TokenPayloadError()
+    user.email = decoded['new-email']
+    db.session.add(user)
+    db.session.commit()
+

@@ -1,7 +1,7 @@
 Update your email address
 
 To update your email address please visit the following link:
-{{ url_for('auth.confirm', token=token, _external=True) }}
+{{ url_for('auth.update_user_email', token=token, _external=True) }}
 
 Sincerely,
 The Ghusn Team

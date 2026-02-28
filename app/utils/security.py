@@ -4,7 +4,8 @@ from jwt.exceptions import (
   ExpiredSignatureError, InvalidSignatureError, DecodeError, InvalidTokenError)
 from flask import current_app
 from app.errors import (
-  TokenError, TokenInvalidSignatureError, TokenExpiredError, TokenMalformedError)
+  TokenError, TokenInvalidSignatureError, TokenExpiredError, 
+  TokenMalformedError, TokenPayloadError)
 
 def generate_timed_token(payload: dict, expiration: int=3600) -> str:
   """
@@ -37,7 +38,7 @@ def decode_timed_token(token: str) -> dict:
     raise TokenInvalidSignatureError()
   except DecodeError:
     raise TokenMalformedError()
-  except InvalidTokenError as e:
+  except TokenPayloadError as e:
     raise TokenError(message=e)
   except Exception as e:
     raise TokenError(message=e)

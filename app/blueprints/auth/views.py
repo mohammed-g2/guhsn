@@ -15,11 +15,11 @@ def login():
     return redirect(url_for('main.index'))
   
   form = LoginForm()
-  svr = current_app.user_service
+  srv = current_app.user_service
   
   if form.validate_on_submit():
     try:
-      user = svr.authenticate(form.email.data, form.password.data)
+      user = srv.authenticate(form.email.data, form.password.data)
       login_user(user, remember=form.remember_me.data)
       next = request.args.get('next')
       if next is None or not next.startswith('/'):
@@ -48,11 +48,11 @@ def register():
     return redirect(url_for('main.index'))
   
   form = RegisterForm()
-  svr = current_app.user_service
+  srv = current_app.user_service
 
   if form.validate_on_submit():
     try:
-      svr.register_user(
+      srv.register_user(
         username=form.username.data, 
         email=form.email.data, 
         password=form.password.data)
@@ -73,10 +73,10 @@ def confirm(token):
   if current_user.confirmed:
     return redirect(url_for('main.index'))
   
-  svr = current_app.user_service
+  srv = current_app.user_service
 
   try:
-    confirmed = svr.confirm_user(current_user, token)
+    confirmed = srv.confirm_user(current_user, token)
     flash(f'Account confirmed.', category='info')
   except TokenError as e:
     flash('Could not confirm your account.', category='danger')
@@ -89,11 +89,42 @@ def confirm(token):
 def resend_confirmation():
   if current_user.confirmed:
     return redirect(url_for('main.index'))
-  svr = current_app.user_service
-  svr.send_confirmation_mail(current_user)
+  srv = current_app.user_service
+  srv.send_confirmation_mail(current_user)
   flash('A new email have been sent, please check your inbox.')
 
   return redirect(url_for('main.index'))
+
+
+def profile_form_handler(form):
+  srv = current_app.user_service
+  user = current_user._get_current_object()
+  
+  if form.validate_on_submit():
+    try:
+      srv.update_profile(user=user, username=form.username.data)
+      flash('User profile updated.', category='info')
+      return redirect(url_for('auth.settings'))
+    except UsernameAlreadyExistsError:
+      form.username.errors.append('Username already in use.')
+
+
+def email_form_handler(form):
+  srv = current_app.user_service
+  user = current_user._get_current_object()
+  
+  if form.validate_on_submit():
+    try:
+      srv.update_email_request(user=user, email=form.email.data)
+      flash('An email have been sent, please check you inbox.', category='info')
+      return redirect(url_for('auth.settings'))
+    except EmailAlreadyExistsError:
+      form.email.errors.append('This email is already associated with an account.')
+
+
+def password_form_handler(form):
+  if form.validate_on_submit():
+    pass
 
 
 @auth_bp.route('/settings', methods=['GET', 'POST'])
@@ -103,26 +134,13 @@ def settings():
   email_form = UpdateUserEmailForm()
   password_form = UpdateUserPasswordForm()
   
-  svr = current_app.user_service
-  user = current_user._get_current_object()
-  
   if request.method == 'POST':
-    if profile_form.submit.data:
-      if profile_form.validate_on_submit():
-        try:
-          svr.update_profile(
-            user=user, username=profile_form.username.data)
-          flash('User profile updated.', category='info')
-          return redirect(url_for('auth.settings'))
-        except UsernameAlreadyExistsError:
-          profile_form.username.errors.append('Username already in use.')
-    
-    elif email_form.submit.data:
-      if email_form.validate_on_submit():
-        pass
-    elif password_form.submit.data:
-      if password_form.validate_on_submit():
-        pass
+    if profile_form.submit_profile.data:
+      profile_form_handler(profile_form)
+    elif email_form.submit_email.data:
+      email_form_handler(email_form)
+    elif password_form.submit_password.data:
+      password_form_handler(password_form)
       
   return render_template(
     'auth/settings.html',
@@ -132,12 +150,18 @@ def settings():
 
 
 @auth_bp.route('/update-user-email/<token>')
+@login_required
 def update_user_email(token):
-  pass
-
-@auth_bp.route('/reset-password', methods=['GET', 'POST'])
-def reset_password_request():
-  pass
+  user = current_user._get_current_object()
+  srv = current_app.user_service
+  
+  try:
+    srv.update_email(user, token)
+    flash('Email address updated.', category='info')
+  except TokenError as e:
+    flash(e, category='danger')
+  
+  return redirect(url_for('auth.settings'))
 
 
 @auth_bp.route('/reset-password/<token>')

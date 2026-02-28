@@ -40,7 +40,7 @@
           {{ form_input(profile_form.username, id='username-input', value=current_user.username) }}
         </div>
         
-        <div class="">{{ profile_form.submit(class='btn btn-teal') }}</div>
+        <div class="">{{ profile_form.submit_profile(class='btn btn-teal') }}</div>
       </form>
     </div>
     
@@ -55,7 +55,7 @@
           <div id="email-help" class="form-text">An email will be sent to you to confirm email change.</div>
         </div>
         
-        <div class="">{{ email_form.submit(class='btn btn-teal') }}</div>
+        <div class="">{{ email_form.submit_email(class='btn btn-teal') }}</div>
       </form>
     </div>
     
@@ -74,7 +74,7 @@
           {{ form_input(password_form.password2, id='confirm-password-input', class='form-control') }}
         </div>
         
-        <div class="">{{ password_form.submit(class='btn btn-teal') }}</div>
+        <div class="">{{ password_form.submit_password(class='btn btn-teal') }}</div>
       </form>
     </div>
     
