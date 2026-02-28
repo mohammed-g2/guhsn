@@ -45,9 +45,9 @@ class UpdateUserProfileForm(FlaskForm):
   submit_profile = SubmitField('Update')
 
 
-class UpdateUserEmailForm(FlaskForm):
-  email = EmailField('Update Email', validators=[DataRequired(), Length(max=64), Email()])
-  submit_email = SubmitField('Update')
+class VerifyUserEmailForm(FlaskForm):
+  email = EmailField('Email', validators=[DataRequired(), Length(max=64), Email()])
+  submit_email = SubmitField('Submit')
 
 
 class VerifyUserPasswordForm(FlaskForm):

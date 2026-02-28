@@ -37,7 +37,9 @@
               {{ form.password.label(for="password-input", class="form-label") }}
             </div>
             <div class="col text-end">
-              <small style="font-size: small;"><a href="#">Forgot Password?</a></small>
+              <small style="font-size: small;">
+                <a href="{{ url_for('auth.reset_password_request') }}">Forgot Password?</a>
+              </small>
             </div>
           </div>
           {{ form.password(class="form-control", id="password-input") }}

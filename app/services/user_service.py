@@ -1,5 +1,6 @@
 from typing import Union
 from flask import Flask
+from email_validator import validate_email, EmailNotValidError
 from app.models import User
 from app.ext import db
 from app.errors import (
@@ -93,7 +94,7 @@ class UserService:
     send_mail(
       to=user.email, 
       subject='Confirm Your Email', 
-      template='email/confirm', 
+      template='email/auth/confirm', 
       user=user, token=token)
   
   def update_profile(self, user, username=None) -> None:
@@ -111,23 +112,23 @@ class UserService:
     db.session.commit()
     
   
-  def update_email_request(self, user: User, email: str) -> None:
+  def update_email_request(self, user: User, new_email: str) -> None:
     """
     Send email to update user's email address.
     
     :raises EmailAlreadyExistsError: if email already exists in database
     """
-    email_found = User.query.filter_by(email=email).first()
+    email_found = User.query.filter_by(email=new_email).first()
     if email_found:
       raise EmailAlreadyExistsError()
     token = generate_timed_token({
       'email': user.email,
-      'new-email': email
+      'new-email': new_email
     })
     send_mail(
-      to=user.email, 
-      subject='Update Email Address', 
-      template='email/update-email', 
+      to=new_email, 
+      subject='Change Email Address', 
+      template='email/auth/update-email', 
       token=token)
     
   def update_email(self, user: User, token: str) -> None:
@@ -155,14 +156,55 @@ class UserService:
     send_mail(
       to=user.email,
       subject='Change Password',
-      template='email/change-password',
+      template='email/auth/change-password',
       token=token)
   
   def change_password(self, user: User, token: str, password: str) -> None:
+    """
+    Change password
+    
+    :raises TokenPayloadError: if provided token doesn't match
+    """
     decoded = decode_timed_token(token)
     if not decoded.get('change-password') == user.id:
       raise TokenPayloadError()
     user.password = password
     db.session.add(user)
     db.session.commit()
-
+  
+  def reset_password_request(self, email: str) -> None:
+    email_found = User.query.filter_by(email=email).first()
+    if not email_found:
+      raise UserNotFoundError()
+    
+    token = generate_timed_token({'reset-password': email})
+    send_mail(
+      to=email, 
+      subject='Reset password', 
+      template='email/auth/reset-password',
+      token=token)
+  
+  def reset_password(self, token: str, password: str) -> None:
+    """
+    Reset user password
+    
+    :raises TokenPayloadError: if email in the token is invalid
+    """
+    decoded = decode_timed_token(token)
+    try:
+      email_info = validate_email(
+        decoded.get('reset-password'), check_deliverability=False)
+      try:
+        email = email_info.normalized
+      except AttributeError:
+        email = email_info.email
+    except EmailNotValidError:
+      raise TokenPayloadError()
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+      raise TokenPayloadError()
+    
+    user.password = password
+    db.session.add(user)
+    db.session.commit()

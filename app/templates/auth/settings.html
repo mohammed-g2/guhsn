@@ -52,7 +52,9 @@
         <div class="mb-3">
           {{ email_form.email.label(for='email-input', class='form-label') }} 
           {{ form_input(email_form.email, id='email-input', aria_description='email-help', value=current_user.email) }}
-          <div id="email-help" class="form-text">An email will be sent to you to confirm email change.</div>
+          <div id="email-help" class="form-text">
+            Enter your new email address. An email will be sent to you to confirm email change.
+          </div>
         </div>
         
         <div class="">{{ email_form.submit_email(class='btn btn-teal') }}</div>

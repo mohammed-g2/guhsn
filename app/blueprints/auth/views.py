@@ -1,11 +1,14 @@
-from flask import render_template, redirect, url_for, flash, request, current_app
-from flask_login import current_user, login_user, logout_user, login_required
+from flask import (
+  render_template, redirect, url_for, flash, request, current_app)
+from flask_login import (
+  current_user, login_user, logout_user, login_required)
 from app.errors import (
   LoginError, EmailAlreadyExistsError, UsernameAlreadyExistsError, 
-  TokenError, UserNotFoundError, PasswordValidationError)
+  TokenError, UserNotFoundError, PasswordValidationError, 
+  TokenPayloadError)
 from . import auth_bp
 from .forms import (
-  LoginForm, RegisterForm, UpdateUserProfileForm, UpdateUserEmailForm,
+  LoginForm, RegisterForm, UpdateUserProfileForm, VerifyUserEmailForm,
   VerifyUserPasswordForm, ChangePasswordForm)
 
 
@@ -56,7 +59,9 @@ def register():
         username=form.username.data, 
         email=form.email.data, 
         password=form.password.data)
-      flash('A confirmation email has been sent, please check your email.', category='info')
+      flash(
+        'A confirmation email has been sent, please check your email.',
+        category='info')
       flash('You can login now.', category='info')
       return redirect(url_for('auth.login'))
     except EmailAlreadyExistsError:
@@ -113,11 +118,14 @@ def email_form_handler(form):
     srv = current_app.user_service
     user = current_user._get_current_object()
     try:
-      srv.update_email_request(user=user, email=form.email.data)
-      flash('An email have been sent, please check you inbox.', category='info')
+      srv.update_email_request(user=user, new_email=form.email.data)
+      flash(
+        'An email have been sent, please check you inbox.', 
+        category='info')
       return redirect(url_for('auth.settings'))
     except EmailAlreadyExistsError:
-      form.email.errors.append('This email is already associated with an account.')
+      form.email.errors.append(
+        'This email is already associated with an account.')
 
 
 def password_form_handler(form):
@@ -125,8 +133,11 @@ def password_form_handler(form):
     srv = current_app.user_service
     user = current_user._get_current_object()
     try:
-      srv.password_change_request(user=user, password=form.password.data)
-      flash('An email have been sent, please check you inbox.', category='info')
+      srv.password_change_request(
+        user=user, password=form.password.data)
+      flash(
+        'An email have been sent, please check you inbox.',
+        category='info')
       return redirect(url_for('auth.settings'))
     except PasswordValidationError:
       form.password.errors.append('Incorrect Password.')
@@ -136,7 +147,7 @@ def password_form_handler(form):
 @login_required
 def settings():
   profile_form = UpdateUserProfileForm()
-  email_form = UpdateUserEmailForm()
+  email_form = VerifyUserEmailForm()
   password_form = VerifyUserPasswordForm()
   
   if request.method == 'POST':
@@ -188,6 +199,41 @@ def change_password(token):
   return render_template('auth/change-password.html', form=form)
 
 
-@auth_bp.route('/reset-password/<token>')
+@auth_bp.route('/reset-password', methods=['GET', 'POST'])
+def reset_password_request():
+  if current_user.is_authenticated:
+    return redirect(url_for('main.index'))
+  
+  form = VerifyUserEmailForm()
+  srv = current_app.user_service
+  
+  if form.validate_on_submit():
+    try:
+      srv.reset_password_request(email=form.email.data)
+    except UserNotFoundError:
+      pass
+    flash(
+      'Please check your inbox for password reset.', 
+      category='warning')
+    return redirect(url_for('main.index'))
+  
+  return render_template('auth/reset-password-request.html', form=form)
+
+
+@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-  pass
+  if current_user.is_authenticated:
+    return redirect(url_for('main.index'))
+  
+  form = ChangePasswordForm()
+  srv = current_app.user_service
+  
+  if form.validate_on_submit():
+    try:
+      srv.reset_password(token, form.password.data)
+      flash('Password has been reset, you can login now.')
+      return redirect(url_for('auth.login'))
+    except TokenPayloadError:
+      flash('Invalid Token', category='danger')
+  
+  return render_template('auth/change-password.html', form=form)
