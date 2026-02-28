@@ -78,7 +78,7 @@ class UserService:
     :raises TokenError: if token in invalid, malformed, expired
     """
     decoded = decode_timed_token(token)
-    if decoded['confirm'] != user.id:
+    if decoded.get('confirm') != user.id:
       raise TokenPayloadError(message='Token does not match the user')
     if not user.confirmed:
       user.confirmed = True
@@ -88,7 +88,9 @@ class UserService:
 
   def send_confirmation_mail(self, user: User) -> None:
     """
-    Send confirmation email to the user
+    Send account confirmation email to the user
+    
+    :param user: `User` model instance
     """
     token = generate_timed_token({'confirm': user.id})
     send_mail(
@@ -97,10 +99,12 @@ class UserService:
       template='email/auth/confirm', 
       user=user, token=token)
   
-  def update_profile(self, user, username=None) -> None:
+  def update_profile(self, user: User, username=None) -> None:
     """
-    Update user info
+    Update user profile info
     
+    :param user: `User` model instance
+    :param username: user's new username
     :raises UsernameAlreadyExistsError: if username name already in use
     """
     if username == user.username:
@@ -116,6 +120,8 @@ class UserService:
     """
     Send email to update user's email address.
     
+    :param user: `User` model instance
+    :param new_email: user's new email
     :raises EmailAlreadyExistsError: if email already exists in database
     """
     email_found = User.query.filter_by(email=new_email).first()
@@ -135,6 +141,8 @@ class UserService:
     """
     Update user's email address
     
+    :param user: `User` model instance
+    :param token: token included in the url
     :raises TokenPayloadError: if user's email address is mismatched
     """
     decoded = decode_timed_token(token)
@@ -148,6 +156,8 @@ class UserService:
     """
     Request password change
     
+    :param user: `User` model instance
+    :param password: user's original password
     :raises PasswordValidationError: if provided password doesn't match
     """
     if not user.verify_password(password):
@@ -163,6 +173,9 @@ class UserService:
     """
     Change password
     
+    :param user: `User` model instance
+    :param token: token included in the url
+    :param password: the new password
     :raises TokenPayloadError: if provided token doesn't match
     """
     decoded = decode_timed_token(token)
@@ -173,6 +186,12 @@ class UserService:
     db.session.commit()
   
   def reset_password_request(self, email: str) -> None:
+    """
+    Send email to request password reset
+    
+    :param email: user's email
+    :raises UserNotFoundError: if user with given email not found
+    """
     email_found = User.query.filter_by(email=email).first()
     if not email_found:
       raise UserNotFoundError()
@@ -188,6 +207,8 @@ class UserService:
     """
     Reset user password
     
+    :param token: token included in the url
+    :param password: the new password
     :raises TokenPayloadError: if email in the token is invalid
     """
     decoded = decode_timed_token(token)
@@ -197,6 +218,7 @@ class UserService:
       try:
         email = email_info.normalized
       except AttributeError:
+        # older version of email-validator fix
         email = email_info.email
     except EmailNotValidError:
       raise TokenPayloadError()
