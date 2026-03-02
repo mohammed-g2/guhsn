@@ -22,7 +22,7 @@
   
   <div class="col-lg-6 col-md-8 col-12 mt-3">
     {% if not current_user.confirmed %}
-    <div class="p-3 w-75 bg-mint">
+    <div class="p-3 bg-mint">
       Your account is not confirmed yet, 
       <a href="{{ url_for('auth.resend_confirmation') }}">
         click here to resend confirmation email.

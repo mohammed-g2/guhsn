@@ -47,8 +47,7 @@ class UserService:
     user = User(username=username, email=email, password=password)
     db.session.add(user)
     db.session.commit()
-    token = self.generate_confirmation_token(user)
-    self.send_confirmation_mail(user, token)
+    self.send_confirmation_mail(user)
     return user
   
   def authenticate(self, email: str, password: str) -> User:
@@ -134,7 +133,7 @@ class UserService:
     send_mail(
       to=new_email, 
       subject='Change Email Address', 
-      template='email/auth/update-email', 
+      template='email/user/update-email', 
       token=token)
     
   def update_email(self, user: User, token: str) -> None:
@@ -146,7 +145,7 @@ class UserService:
     :raises TokenPayloadError: if user's email address is mismatched
     """
     decoded = decode_timed_token(token)
-    if not user.email == decoded['email']:
+    if not user.email == decoded.get('email'):
       raise TokenPayloadError()
     user.email = decoded['new-email']
     db.session.add(user)
@@ -166,7 +165,7 @@ class UserService:
     send_mail(
       to=user.email,
       subject='Change Password',
-      template='email/auth/change-password',
+      template='email/user/change-password',
       token=token)
   
   def change_password(self, user: User, token: str, password: str) -> None:

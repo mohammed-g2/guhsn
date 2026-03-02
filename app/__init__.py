@@ -28,9 +28,10 @@ def create_app(config_name: str) -> Flask:
   with app.app_context():
     from app.models import User, Role
 
-  from app.blueprints import main_bp, auth_bp
+  from app.blueprints import main_bp, auth_bp, user_bp
 
   app.register_blueprint(main_bp)
   app.register_blueprint(auth_bp, url_prefix='/auth')
+  app.register_blueprint(user_bp, url_prefix='/user')
 
   return app
